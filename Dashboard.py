@@ -11,14 +11,18 @@ st.markdown("Created by **Vernon Chinkuli**")
 # Load Cleaned Data
 @st.cache_data
 def load_data():
-    df = pd.read_csv('Cleaned_Online_Retail.csv')
-    df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
-    df['Revenue'] = df['Quantity'] * df['UnitPrice']
-    df['YearMonth'] = df['InvoiceDate'].dt.to_period('M')
-    return df
-
-df = load_data()
-
+    # 1. Read the raw data directly from a public web source
+    url = "https://raw.githubusercontent.com/Cvernons/E-Commerce-Data-Pipeline-Dashboard/main/OnlineRetail.csv"
+    raw_df = pd.read_csv(url, encoding="ISO-8859-1")
+    
+    # 2. Apply your cleaning logic live on the fly
+    cleaned_df = raw_df.dropna(subset=['CustomerID', 'Description'])
+    cleaned_df = cleaned_df.drop_duplicates()
+    cleaned_df = cleaned_df[cleaned_df['Quantity'] > 0]
+    cleaned_df['InvoiceDate'] = pd.to_datetime(cleaned_df['InvoiceDate'])
+    cleaned_df['Total_Sales'] = cleaned_df['Quantity'] * cleaned_df['UnitPrice']
+    
+    return cleaned_df
 # --- SIDEBAR FILTER ---
 st.sidebar.header("Filter Options")
 selected_country = st.sidebar.selectbox("Select a Country", options=["All"] + list(df['Country'].unique()))
