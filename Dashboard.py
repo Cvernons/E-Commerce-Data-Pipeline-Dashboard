@@ -11,18 +11,25 @@ st.markdown("Created by **Vernon Chinkuli**")
 # Load Cleaned Data
 @st.cache_data
 def load_data():
-    # 1. Read the raw data directly from a public web source
-    url = "https://raw.githubusercontent.com/Cvernons/E-Commerce-Data-Pipeline-Dashboard/main/OnlineRetail.csv"
+    # 1. Read the data from an optimized public web source to bypass GitHub's 25MB size limit
+    url = "https://raw.githubusercontent.com/datasets/ecommerce-data/master/data.csv"
     raw_df = pd.read_csv(url, encoding="ISO-8859-1")
     
     # 2. Apply your cleaning logic live on the fly
-    cleaned_df = raw_df.dropna(subset=['CustomerID', 'Description'])
+    cleaned_df = raw_df.dropna(subset=['CustomerID', 'Description']).copy()
     cleaned_df = cleaned_df.drop_duplicates()
     cleaned_df = cleaned_df[cleaned_df['Quantity'] > 0]
+    
+    # 3. Create the data dimensions and metrics your metrics and charts expect
     cleaned_df['InvoiceDate'] = pd.to_datetime(cleaned_df['InvoiceDate'])
-    cleaned_df['Total_Sales'] = cleaned_df['Quantity'] * cleaned_df['UnitPrice']
+    cleaned_df['YearMonth'] = cleaned_df['InvoiceDate'].dt.to_period('M')
+    cleaned_df['Revenue'] = cleaned_df['Quantity'] * cleaned_df['UnitPrice']
     
     return cleaned_df
+
+# Run the function to generate the master dataframe 'df'
+df = load_data()
+
 # --- SIDEBAR FILTER ---
 st.sidebar.header("Filter Options")
 selected_country = st.sidebar.selectbox("Select a Country", options=["All"] + list(df['Country'].unique()))
