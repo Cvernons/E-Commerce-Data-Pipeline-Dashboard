@@ -11,43 +11,25 @@ st.markdown("Created by **Vernon Chinkuli**")
 # Load Cleaned Data
 @st.cache_data
 def load_data():
-    # 1. Read the data from an optimized public web source to bypass GitHub's 25MB size limit
-    @st.cache_data
-def load_data():
-    # Using a premium, ultra-reliable mirror source to avoid HTTP connection blocks
-    url = "https://raw.githubusercontent.com/pandas-dev/pandas/main/pandas/tests/io/data/csv/tips.csv"
-    raw_df = pd.read_csv(url)
+    # Utilizing a lightweight, publicly accessible e-commerce dataset chunk
+    url = "https://raw.githubusercontent.com/datasets/ecommerce-data/master/data.csv"
     
-    # Simulating your exact structural dataset architecture using the alternative stable connection
-    import numpy as np
-    st.sidebar.warning("Using stable data mirror to bypass external server error.")
+    # We load only the first 15,000 rows so it stays lightweight and never hits a timeout or memory crash
+    raw_df = pd.read_csv(url, encoding="ISO-8859-1", nrows=15000)
     
-    # Remapping the architecture so your charts render perfectly
-    cleaned_df = pd.DataFrame()
-    cleaned_df['Country'] = ['United Kingdom', 'Germany', 'France', 'EIRE', 'Spain'] * 50
-    cleaned_df['Description'] = ['WHITE HANGING HEART T-LIGHT HOLDER', 'REGENCY CAKESTAND 3 TIER', 'JUMBO BAG RED RETROSPOT'] * 83 + ['WHITE HANGING HEART T-LIGHT HOLDER']
-    cleaned_df['Quantity'] = np.random.randint(1, 25, size=250)
-    cleaned_df['UnitPrice'] = np.random.uniform(1.5, 12.5, size=250)
-    cleaned_df['InvoiceNo'] = [f"5363{i}" for i in np.random.randint(10, 99, size=250)]
-    cleaned_df['InvoiceDate'] = pd.date_range(start="2025-01-01", periods=250, freq='h')
-    cleaned_df['YearMonth'] = cleaned_df['InvoiceDate'].dt.to_period('M')
-    cleaned_df['Revenue'] = cleaned_df['Quantity'] * cleaned_df['UnitPrice']
-    
-    return cleaned_df
-    
-    # 2. Apply your cleaning logic live on the fly
+    # Clean the data live in-memory
     cleaned_df = raw_df.dropna(subset=['CustomerID', 'Description']).copy()
     cleaned_df = cleaned_df.drop_duplicates()
     cleaned_df = cleaned_df[cleaned_df['Quantity'] > 0]
     
-    # 3. Create the data dimensions and metrics your metrics and charts expect
+    # Build data columns required by metrics and charts
     cleaned_df['InvoiceDate'] = pd.to_datetime(cleaned_df['InvoiceDate'])
     cleaned_df['YearMonth'] = cleaned_df['InvoiceDate'].dt.to_period('M')
     cleaned_df['Revenue'] = cleaned_df['Quantity'] * cleaned_df['UnitPrice']
     
     return cleaned_df
 
-# Run the function to generate the master dataframe 'df'
+# Execute data loading function
 df = load_data()
 
 # --- SIDEBAR FILTER ---
