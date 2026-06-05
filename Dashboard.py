@@ -11,25 +11,12 @@ st.markdown("Created by **Vernon Chinkuli**")
 # Load Cleaned Data
 @st.cache_data
 def load_data():
-    # Utilizing a lightweight, publicly accessible e-commerce dataset chunk
-    url = "https://raw.githubusercontent.com/datasets/ecommerce-data/master/data.csv"
-    
-    # We load only the first 15,000 rows so it stays lightweight and never hits a timeout or memory crash
-    raw_df = pd.read_csv(url, encoding="ISO-8859-1", nrows=15000)
-    
-    # Clean the data live in-memory
-    cleaned_df = raw_df.dropna(subset=['CustomerID', 'Description']).copy()
-    cleaned_df = cleaned_df.drop_duplicates()
-    cleaned_df = cleaned_df[cleaned_df['Quantity'] > 0]
-    
-    # Build data columns required by metrics and charts
-    cleaned_df['InvoiceDate'] = pd.to_datetime(cleaned_df['InvoiceDate'])
-    cleaned_df['YearMonth'] = cleaned_df['InvoiceDate'].dt.to_period('M')
-    cleaned_df['Revenue'] = cleaned_df['Quantity'] * cleaned_df['UnitPrice']
-    
-    return cleaned_df
+    df = pd.read_csv('Cleaned_Online_Retail.csv')
+    df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
+    df['Revenue'] = df['Quantity'] * df['UnitPrice']
+    df['YearMonth'] = df['InvoiceDate'].dt.to_period('M')
+    return df
 
-# Execute data loading function
 df = load_data()
 
 # --- SIDEBAR FILTER ---
