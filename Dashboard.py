@@ -11,12 +11,17 @@ st.markdown("Created by **Vernon Chinkuli**")
 # Load Cleaned Data
 @st.cache_data
 def load_data():
-    df = pd.read_csv('Cleaned_Online_Retail.csv')
+    # Reads your new lightweight file directly from your repository folder
+    df = pd.read_csv('Cleaned_Online_Retail_Small.csv')
+    
+    # Structure columns accurately for metrics and charts
     df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
-    df['Revenue'] = df['Quantity'] * df['UnitPrice']
     df['YearMonth'] = df['InvoiceDate'].dt.to_period('M')
+    df['Revenue'] = df['Quantity'] * df['UnitPrice']
+    
     return df
 
+# Run the function to generate the main dataframe
 df = load_data()
 
 # --- SIDEBAR FILTER ---
